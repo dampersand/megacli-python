@@ -491,7 +491,7 @@ class MegaCLI:
     Delete a logical drive
 
     :param drive: specifies the drive to remove
-    :type drive: string
+    :type drive: int
     :param adapter: specifies the drive's controller
     :type adapter: int
     :param force: specifies whether to force or not the removal of the drive
@@ -516,3 +516,131 @@ class MegaCLI:
 
     return self.execute("-CfgLdDel {0}".format(' '.join(cmd)))
 
+  def clear_foreign(self, adapter):
+    """
+    Clear foreign configs from an adapter
+
+    :param adapter: specifies the foreign config's controller
+    :type adapter: int
+    :return: MegaCLI command output
+    :rtype: string
+    """
+
+    cmd = []
+
+    if isinstance(adapter, int):
+      cmd.append("-a{0}".format(adapter))
+    else:
+      raise ValueError("Foreign config's adapter ID must be type int")
+
+    return self.execute("-CfgForeign -Clear {0}".format(' '.join(cmd)))
+
+  def make_pd_good(self, drive, adapter):
+    """
+    Set a drive from 'bad' to 'unconfigured, good'
+
+    :param drive: specifies the enclosure:drive to set to 'good'
+    :type drive: string
+    :param adapter: specifies the drive's controller
+    :type adapter: int
+    :return: MegaCLI command output
+    :rtype: string
+    """
+
+    cmd = []
+
+    cmd.append("-PhysDrv [{0}]".format(drive))
+
+    if isinstance(adapter, int):
+      cmd.append("-a{0}".format(adapter))
+    else:
+      raise ValueError("Drive's adapter ID must be type int")
+
+    return self.execute("-PDMakeGood {0}".format(' '.join(cmd)))
+
+  def start_init(self, drive, adapter, full = False):
+    """
+    Initializes a logical drive
+
+    :param drive: specifies the logical drive to initialize
+    :type drive: string
+    :param adapter: specifies the drive's controller
+    :type adapter: int
+    :param full: specifies whether to do a full initialize
+    :type full: bool
+    :return: MegaCLI command output
+    :rtype: string
+    """
+
+    cmd = []
+
+    cmd.append("-Start")
+
+    if isinstance(full, bool):
+      if full:
+        cmd.append('-full')
+    else:
+      raise ValueError("Logical drive's full flag must be type bool")
+
+    cmd.append("-L{0}".format(drive))
+
+    if isinstance(adapter, int):
+      cmd.append("-a{0}".format(adapter))
+    else:
+      raise ValueError("Logical drive's adapter ID must be type int")
+
+    return self.execute("-LDInit {0}".format(' '.join(cmd)))
+
+  def check_init(self, drive, adapter):
+    """
+    Returns initialization status of a logical drive
+
+    :param drive: specifies the logical drive to check
+    :type drive: string
+    :param adapter: specifies the drive's controller
+    :type adapter: int
+    :param full: specifies whether to do a full initialize
+    :type full: bool
+    :return: MegaCLI command output
+    :rtype: string
+    """
+
+    cmd = []
+
+    cmd.append("-ShowProg")
+
+    cmd.append("-L{0}".format(drive))
+
+    if isinstance(adapter, int):
+      cmd.append("-a{0}".format(adapter))
+    else:
+      raise ValueError("Logical drive's adapter ID must be type int")
+
+    return self.execute("-LDInit {0}".format(' '.join(cmd)))
+
+  def stop_init(self, drive, adapter):
+    """
+    Stops initialization on a logical drive
+
+    :param drive: specifies the logical drive to stop initializion
+    :type drive: string
+    :param adapter: specifies the drive's controller
+    :type adapter: int
+    :param full: specifies whether to do a full initialize
+    :type full: bool
+    :return: MegaCLI command output
+    :rtype: string
+    """
+
+    cmd = []
+
+    cmd.append("-Stop")
+
+    cmd.append("-L{0}".format(drive))
+
+    if isinstance(adapter, int):
+      cmd.append("-a{0}".format(adapter))
+    else:
+      raise ValueError("Logical drive's adapter ID must be type int")
+
+    return self.execute("-LDInit {0}".format(' '.join(cmd)))
